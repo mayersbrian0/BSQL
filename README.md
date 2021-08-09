@@ -1,7 +1,7 @@
 # BSQL
 SQL clone written in C.
 
-#Usage
+# Usage
 
 # References
 
