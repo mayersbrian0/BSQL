@@ -2,9 +2,20 @@
 #include "stdlib.h"
 #include "string.h"
 #include "sys/types.h"
-//local headers 
 #include "arg_buffer.h"
 #include "compiler.h"
+
+
+#ifndef COMPILER_H
+    #include "compiler.h"
+    #define COMPILER_H
+#endif
+
+#ifndef ARG_BUFFER_H
+    #include "arg_buffer.h"
+    #define ARG_BUFFER_H
+#endif
+
 
 #define INPUT_ERROR { printf("Error Reading Command\n"); exit(EXIT_FAILURE);} //error reading user input
 #define VERSION "0.1" //is it possible to create enviornment variable of version # set using git and update it that way?
@@ -18,13 +29,12 @@ void general_print() {
     printf(">> ");
 }
 
-/* For Testing hard coded table FORMAT: insert id username email
 
-*/
 
 
 int main(int argc, char* argv[]) {
     ArgBuffer* arg_inputs = create_arg_buffer(); //used to hold the values the user inputs
+    Table* table= init_table();
     print_start();
 
     while(1) { 
@@ -48,10 +58,21 @@ int main(int argc, char* argv[]) {
             Statement statement;
             switch (check_statement(arg_inputs, &statement)) {
                 case (STATEMENT_VALID):
-                    execute_statement(&statement);
+                    switch (execute_statement(&statement, table)) {
+                        case (EXECUTE_SUCC):
+                            printf("Execution Succesful\n");
+                            break;
+                        case (EXIT_FAILURE):
+                            printf("Execution Failed\n");
+                            break;
+                    }
+                    break;
+                case (STATEMENT_SYNTAX_ERROR):
+                    printf("Syntx Error\n");
                     break;
                 case (STATEMENT_INVALID):
                     printf("Unrecognized statement at start of %s\n", arg_inputs->buffer);
+                    break;
             }
         }
 
